@@ -1,49 +1,6 @@
-/*
-
-import path from "path";
-import express from "express";
 import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
+dotenv.config(); // MUST be first
 
-import authRoutes from "./routes/auth.routes.js";
-import messageRoutes from "./routes/message.routes.js";
-import userRoutes from "./routes/user.routes.js";
-
-import connectToMongoDb from "./db/connectToMongoDb.js";
-import { app, server } from "./socket/socket.js";
-
-dotenv.config();
-
-const port = process.env.PORT || 3000;
-
-const __dirname = path.resolve();
-
-app.use(express.json());
-app.use(cookieParser());
-
-app.use("/api/auth", authRoutes);
-app.use("/api/messages", messageRoutes);
-app.use("/api/users", userRoutes);
-
-app.use(express.static(path.join(__dirname, "/frontend/dist")))
-
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
-});
-
-server.listen(port, () => {
-    connectToMongoDb();
-    console.log(`Server Running on port ${port}`);
-});
-
-
-*/
-
-
-import dotenv from "dotenv";
-dotenv.config(); // 👈 MUST BE FIRST
-
-import path from "path";
 import express from "express";
 import cookieParser from "cookie-parser";
 
@@ -55,7 +12,6 @@ import connectToMongoDb from "./db/connectToMongoDb.js";
 import { app, server } from "./socket/socket.js";
 
 const port = process.env.PORT || 3000;
-const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(cookieParser());
@@ -64,11 +20,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 
-// Serve frontend (local + render)
-app.use(express.static(path.join(__dirname, "frontend", "dist")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+// ✅ Backend-only health check
+app.get("/", (req, res) => {
+  res.send("ChatBeta Backend is running 🚀");
 });
 
 server.listen(port, () => {
