@@ -14,39 +14,39 @@ import { app, server } from "./socket/socket.js";
 
 const PORT = process.env.PORT || 3000;
 
-/* =========================
-   🔥 CORS CONFIG (CRITICAL)
-   ========================= */
+/* =======================
+   🔥 CORS — THIS IS THE FIX
+   ======================= */
 app.use(
   cors({
-    origin: "https://chat-beta-nu.vercel.app", // 👈 YOUR VERCEL DOMAIN
-    credentials: true,                         // 👈 ALLOW COOKIES
+    origin: "https://chat-beta-4gt6ljdfd-varshajanakis-projects.vercel.app",
+    credentials: true,
   })
 );
 
-/* =========================
-   MIDDLEWARES
-   ========================= */
+/* =======================
+   MIDDLEWARE
+   ======================= */
 app.use(express.json());
 app.use(cookieParser());
 
-/* =========================
+/* =======================
    ROUTES
-   ========================= */
+   ======================= */
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 
-/* =========================
+/* =======================
    HEALTH CHECK
-   ========================= */
+   ======================= */
 app.get("/", (req, res) => {
-  res.send("ChatBeta Backend is running 🚀");
+  res.json({ status: "ChatBeta backend is running" });
 });
 
-/* =========================
+/* =======================
    START SERVER
-   ========================= */
+   ======================= */
 server.listen(PORT, () => {
   connectToMongoDb();
   console.log(`Server running on port ${PORT}`);
