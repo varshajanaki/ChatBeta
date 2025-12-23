@@ -3,6 +3,7 @@ dotenv.config(); // MUST be first
 
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
@@ -11,21 +12,42 @@ import userRoutes from "./routes/user.routes.js";
 import connectToMongoDb from "./db/connectToMongoDb.js";
 import { app, server } from "./socket/socket.js";
 
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
+/* =========================
+   🔥 CORS CONFIG (CRITICAL)
+   ========================= */
+app.use(
+  cors({
+    origin: "https://chat-beta-nu.vercel.app", // 👈 YOUR VERCEL DOMAIN
+    credentials: true,                         // 👈 ALLOW COOKIES
+  })
+);
+
+/* =========================
+   MIDDLEWARES
+   ========================= */
 app.use(express.json());
 app.use(cookieParser());
 
+/* =========================
+   ROUTES
+   ========================= */
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 
-// ✅ Backend-only health check
+/* =========================
+   HEALTH CHECK
+   ========================= */
 app.get("/", (req, res) => {
   res.send("ChatBeta Backend is running 🚀");
 });
 
-server.listen(port, () => {
+/* =========================
+   START SERVER
+   ========================= */
+server.listen(PORT, () => {
   connectToMongoDb();
-  console.log(`Server Running on port ${port}`);
+  console.log(`Server running on port ${PORT}`);
 });
