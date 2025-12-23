@@ -1,32 +1,33 @@
-import { useEffect, useState } from "react"
-import useConversation from "../zustand/useConversation.js";
+import { useEffect, useState } from "react";
+import useConversation from "../zustand/useConversation";
 import toast from "react-hot-toast";
+import { apiFetch } from "../utils/api";
 
 const useGetMessages = () => {
-    const [loading, setLoading] = useState(false);
-    const { messages, setMessages,selectedConversation } = useConversation();
+  const [loading, setLoading] = useState(false);
+  const { messages, setMessages, selectedConversation } = useConversation();
 
-    useEffect(() => {
-        const getMessages = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch(`/api/messages/${selectedConversation._id}`);
-                const data = await res.json();
-                if(data.error) {
-                    throw new Error(data.error);
-                }
-                setMessages(data);
-            } catch (error) {
-                toast.error(error.message);
-            } finally {
-                setLoading(false);
-            }
-        }
+  useEffect(() => {
+    const getMessages = async () => {
+      if (!selectedConversation?._id) return;
 
-        if(selectedConversation?._id) getMessages();
-    },[selectedConversation?._id, setMessages])
+      setLoading(true);
+      try {
+        const data = await apiFetch(
+          `/api/messages/${selectedConversation._id}`
+        );
+        setMessages(data);
+      } catch (error) {
+        toast.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return {loading, messages};
-}
+    getMessages();
+  }, [selectedConversation?._id, setMessages]);
 
-export default useGetMessages
+  return { loading, messages };
+};
+
+export default useGetMessages;

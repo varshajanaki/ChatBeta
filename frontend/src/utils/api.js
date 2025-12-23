@@ -12,7 +12,7 @@ export const apiFetch = async (endpoint, options = {}) => {
       "Content-Type": "application/json",
       ...(options.headers || {}),
     },
-    body: options.body,
+    body: options.body ? JSON.stringify(options.body) : undefined,
   });
 
   if (!res.ok) {
