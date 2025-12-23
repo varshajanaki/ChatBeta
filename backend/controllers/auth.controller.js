@@ -10,8 +10,8 @@ export const signup = async (req, res) => {
       return res.status(400).json({ error: "Passwords do not match" });
     }
 
-    const user = await User.findOne({ username });
-    if (user) {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
       return res.status(400).json({ error: "Username not available" });
     }
 
@@ -31,7 +31,6 @@ export const signup = async (req, res) => {
 
     await newUser.save();
 
-    // ✅ CORRECT ID
     generateTokenAndSetCookie(newUser._id, res);
 
     res.status(201).json({
@@ -40,9 +39,8 @@ export const signup = async (req, res) => {
       username: newUser.username,
       profilePic: newUser.profilePic,
     });
-
   } catch (error) {
-    console.log("Error in signup controller", error.message);
+    console.error("Signup error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -69,19 +67,24 @@ export const login = async (req, res) => {
       username: user.username,
       profilePic: user.profilePic,
     });
-
   } catch (error) {
-    console.log("Error in login controller", error.message);
+    console.error("Login error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 export const logout = (req, res) => {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
+    res.cookie("jwt", "", {
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
     res.status(200).json({ message: "Logged Out Successfully" });
   } catch (error) {
-    console.log("Error in logout controller", error.message);
+    console.error("Logout error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
