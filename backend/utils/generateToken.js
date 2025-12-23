@@ -4,16 +4,14 @@ const generateTokenAndSetCookie = (userId, res) => {
   const token = jwt.sign(
     { userId },
     process.env.JWT_SECRET,
-    {
-      expiresIn: "15d", // ✅ FIXED
-    }
+    { expiresIn: "15d" }
   );
 
   res.cookie("jwt", token, {
+    httpOnly: true,
+    secure: true,        // 🔥 REQUIRED for HTTPS (Vercel)
+    sameSite: "none",    // 🔥 REQUIRED for cross-site cookies
     maxAge: 15 * 24 * 60 * 60 * 1000,
-    httpOnly: true, // prevents XSS
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict", // CSRF protection
   });
 };
 
